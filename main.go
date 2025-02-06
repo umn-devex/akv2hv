@@ -1,4 +1,16 @@
-// go run main.go --vaultName=jst-awx
+// Run the gen command to generate a json file secrets.json listing all secrets
+//
+// go run main.go --kv=jst-awx --gen
+//
+// Update that secrets.json file:
+// `vault_secret_location` - where you would like the secret to go in vault
+// `vault_secret_key` - the key of the field within the secret (each secret can contain multiple key/value pairs)
+// `copy` true if you would like it copied to vault
+//
+// Run the copy command to copy the secrets to vault:
+//
+// go run main.go --kv=jst-axw --copy
+//
 
 package main
 
@@ -16,21 +28,26 @@ import (
 
 func main() {
 	// Define the flags
-	keyVaultName := flag.String("vaultName", "", "The name of the Azure Key Vault.")
-	generateJSON := flag.Bool("g", false, "Generate json file secrets.json with a list of secrets from KeyVault as keys.")
-	copySecrets := flag.Bool("c", false, "Run the function to copy the secrets from KeyVault to HashiCorp Vault based on the secrets.json locations.")
+	keyVaultName := flag.String("kv", "", "The name of the Azure Key Vault.")
+	defaultVaultLocation := flag.String("location", "", "The default location to place secrets in Hashicorp Vault (will default to secret/).")
+	generateJSON := flag.Bool("gen", false, "Generate json file secrets.json with a list of secrets from KeyVault as keys.")
+	copySecrets := flag.Bool("copy", false, "Run the function to copy the secrets from KeyVault to HashiCorp Vault based on the secrets.json locations.")
 	flag.Parse()
 
 	if *keyVaultName == "" {
-		log.Fatalf("vaultName flag is required")
+		log.Fatalf("kv flag is required")
+	}
+
+	if *defaultVaultLocation == "" {
+		*defaultVaultLocation = "secret/"
 	}
 
 	if *generateJSON {
-		generateJSONFunction(*keyVaultName)
+		generateJSONFunction(*keyVaultName, *defaultVaultLocation)
 	} else if *copySecrets {
 		copySecretsFunction(*keyVaultName)
 	} else {
-		log.Fatalf("Either -g or -c flag must be specified")
+		log.Fatalf("Either --gen or --copy flag must be specified")
 	}
 }
 
@@ -39,8 +56,8 @@ type Secret struct {
 	KeyVaultSecretName  string `json:"key_vault_secret_name"`
 	KeyVaultSecretValue string `json:"key_vault_secret_value"`
 	VaultSecretLocation string `json:"vault_secret_location"`
-	VaultSecretField    string `json:"vault_secret_field"`
-	Skip                bool   `json:"skip"`
+	VaultSecretKey      string `json:"vault_secret_key"`
+	Copy                bool   `json:"copy"`
 }
 
 // Secrets represents the overall JSON structure
@@ -48,7 +65,7 @@ type Secrets struct {
 	Secrets []Secret `json:"Secrets"`
 }
 
-func generateJSONFunction(keyVaultName string) {
+func generateJSONFunction(keyVaultName string, defaultVaultLocation string) {
 
 	var retrivedList Secrets
 
@@ -76,7 +93,7 @@ func generateJSONFunction(keyVaultName string) {
 		}
 
 		for _, secret := range page.Value {
-			newSecret := Secret{KeyVaultSecretName: secret.ID.Name(), KeyVaultSecretValue: "", VaultSecretLocation: "", VaultSecretField: "", Skip: true}
+			newSecret := Secret{KeyVaultSecretName: secret.ID.Name(), KeyVaultSecretValue: "", VaultSecretLocation: defaultVaultLocation, VaultSecretKey: "secret", Copy: false}
 			retrivedList.Secrets = append(retrivedList.Secrets, newSecret)
 		}
 	}
@@ -117,8 +134,8 @@ func copySecretsFunction(keyVaultName string) {
 	}
 
 	for i, individualSecret := range secretsData.Secrets {
-		if individualSecret.Skip == true {
-			fmt.Printf("Skipping %v as skip: true\n", individualSecret.KeyVaultSecretName)
+		if !individualSecret.Copy {
+			fmt.Printf("Skipping %v as copy: false\n", individualSecret.KeyVaultSecretName)
 		} else {
 			fmt.Printf("Retrieving %v\n", individualSecret.KeyVaultSecretName)
 			secretsData.Secrets[i].KeyVaultSecretValue, err = getSecretFromKeyVault(keyVaultName, individualSecret.KeyVaultSecretName)
