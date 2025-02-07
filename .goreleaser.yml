@@ -1,6 +1,7 @@
+version: 2
+
 builds:
   - id: akv2hv
-    main: main.go
     goos:
       - linux
       - windows
