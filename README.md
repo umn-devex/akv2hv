@@ -20,13 +20,21 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
     - Generate with default kvv2 mount `secret`
 
         ```bash
+        # Linux
         ./akv2hv --kv=INSERT_AZ_KV_NAME --gen
+
+        # Windows
+        akv2hv.exe --kv=INSERT_AZ_KV_NAME --gen
         ```
 
     - Generate with alternative kvv2 mount location
 
         ```bash
+        # Linux
         ./akv2hv --kv=INSERT_AZ_KV_NAME --mount=secret2 --gen
+
+        # Windows
+        akv2hv.exe --kv=INSERT_AZ_KV_NAME --mount=secret2 --gen
         ```
 
 2. The second step is to edit the secrets.json file that was generated in step 1. The fields that you will want to edit include:
@@ -39,7 +47,11 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 3. The final step is to run the copy function to retrieve the secret data from Azure KeyVault and write the secrets to Hashicorp Vault.
 
     ```bash
+    # Linux
     ./akv2hv --kv=INSERT_AZ_KV_NAME --vault_addr=https://EXAMPLE.z1.hashicorp.cloud:8200/ --vault_namespace=admin/namespace --copy
+
+    # Windows
+    akv2hv.exe --kv=INSERT_AZ_KV_NAME --vault_addr=https://EXAMPLE.z1.hashicorp.cloud:8200/ --vault_namespace=admin/namespace --copy
     ```
 
 ## Building Locally

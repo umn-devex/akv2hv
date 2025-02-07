@@ -21,7 +21,7 @@ func main() {
 		log.Fatalf("--kv flag is required")
 	}
 
-	if *copySecrets == true && *vaultAddr == "" && *vaultNamespace == "" {
+	if *copySecrets && *vaultAddr == "" && *vaultNamespace == "" {
 		log.Fatalf("--vault_addr & --vault_namespace required to copy secrets")
 	}
 

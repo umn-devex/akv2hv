@@ -1,0 +1,8 @@
+builds:
+  - id: akv2hv
+    main: main.go
+    goos:
+      - linux
+      - windows
+    goarch:
+      - amd64
