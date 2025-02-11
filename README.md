@@ -39,7 +39,7 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 
 2. The second step is to edit the secrets.json file that was generated in step 1. The fields that you will want to edit include:
 
-    - `vault_kvv2_mount`      - the kvv2 mount location (defaults to secret)
+    - `vault_secret_mount`      - the kvv2 mount location (defaults to secret)
     - `vault_secret_name` 	  - the name of the secret including path that you would like to store the value to i.e. github/super_secret
     - `vault_secret_key`      - the key of the field within the secret (each secret can contain multiple key/value pairs)
     - `copy`                  - true if you would like it copied to vault (defaults to false so nothing will be copied)
