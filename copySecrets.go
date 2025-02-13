@@ -12,11 +12,11 @@ import (
 	vault "github.com/hashicorp/vault/api"
 )
 
-func copySecretsFunction(keyVaultName string, vaultAddr string, vaultNamespace string) {
+func copySecretsFunction(keyVaultName string, vaultAddr string, vaultNamespace string, jsonFile string) {
 	// Read the JSON file
-	data, err := os.ReadFile("secrets.json")
+	data, err := os.ReadFile(jsonFile)
 	if err != nil {
-		log.Fatalf("Error reading file: %v", err)
+		log.Fatalf("Error reading file: %v. Use --file flag if you would like to read from a different file besides secrets.json", err)
 	}
 
 	// Unmarshal the JSON data into the Secrets struct
