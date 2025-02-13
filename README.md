@@ -15,8 +15,6 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 
     - If you do not have the vault enterprise cli installed login to the vault GUI and go to the `Person Icon>Copy token` and then set your environmental variable `VAULT_TOKEN` with that token.
 
-5. Export your vault token `export VAULT_TOKEN=TOKEN_FROM_STEP_3`
-
 ## Copy Secrets
 
 1. The first step is to generate a json file with the list of all secrets you have in KeyVault. This will only retrieve their names, not their values.
