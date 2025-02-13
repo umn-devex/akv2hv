@@ -33,12 +33,12 @@ func copySecretsFunction(keyVaultName string, vaultAddr string, vaultNamespace s
 			fmt.Printf("Retrieving secret from keyvault: %v\n", individualSecret.KeyVaultSecretName)
 			secretValue, err := getSecretFromKeyVault(keyVaultName, individualSecret.KeyVaultSecretName)
 			if err != nil {
-				log.Fatalf("failed to get secret from keyvault: %v\n", err)
+				log.Fatalf("failed to get secret from keyvault: %v", err)
 			}
 			fmt.Printf("Writing secret to vault: %v/%v %v=REDACTED\n", individualSecret.VaultSecretPath, individualSecret.VaultSecretName, individualSecret.VaultSecretKey)
 			err = writeSecretToVault(vaultAddr, vaultNamespace, individualSecret.VaultSecretPath, individualSecret.VaultSecretName, individualSecret.VaultSecretKey, secretValue)
 			if err != nil {
-				log.Fatalf("failed to write secret to Hashicorp Vault: %v\n", err)
+				log.Fatalf("failed to write secret to Hashicorp Vault: %v", err)
 			}
 		}
 
