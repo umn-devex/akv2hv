@@ -1,4 +1,5 @@
 # akv2hv
+
 Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 
 ## Prerequisites
@@ -7,7 +8,7 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 
       - Windows (probably want windows_amd64)
       - Linux (probably want linux_amd64)
-      - MacOS (darwin_amd64 for intel based macs, darwin_arm64 for apple silicon based macs)
+      - MacOS (darwin_amd64 for intel based macs, darwin_arm64 for apple silicon based macs). You may get a warning that the the app is from an unidentified developer. You will need to be an administrator on your mac and follow [these instructions](https://support.apple.com/en-us/102445)
 
 2. Open a command line window in the directory that you downloaded the binary to.
 
@@ -26,7 +27,7 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 1. The first step is to generate a json file with the list of all secrets you have in KeyVault. This will only retrieve their names, not their values.
 
     ```bash
-    # Linux
+    # Linux & MacOS
     ./akv2hv --kv=INSERT_AZ_KV_NAME --gen
 
     # Windows
@@ -43,7 +44,7 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 3. The final step is to run the copy function to retrieve the secret data from Azure KeyVault and write the secrets to Hashicorp Vault.
 
     ```bash
-    # Linux
+    # Linux & MacOS
     ./akv2hv --kv=INSERT_AZ_KV_NAME --vault_addr=https://EXAMPLE.z1.hashicorp.cloud:8200/ --vault_namespace=admin/namespace --copy
 
     # Windows
