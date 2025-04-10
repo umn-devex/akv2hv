@@ -11,7 +11,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azsecrets"
 )
 
-func generateJSONFunction(keyVaultName string, defaultPath string, jsonFile string) {
+func generateJSONFunction(keyVaultName string, defaultMount string, defaultPath string, defaultCopy bool, jsonFile string) {
 
 	var retrivedList Secrets
 
@@ -39,7 +39,7 @@ func generateJSONFunction(keyVaultName string, defaultPath string, jsonFile stri
 		}
 
 		for _, secret := range page.Value {
-			newSecret := Secret{KeyVaultSecretName: secret.ID.Name(), VaultSecretPath: defaultPath, VaultSecretName: secret.ID.Name(), VaultSecretKey: "secret", Copy: false}
+			newSecret := Secret{KeyVaultSecretName: secret.ID.Name(), VaultSecretMount: defaultMount, VaultSecretPath: defaultPath, VaultSecretName: secret.ID.Name(), VaultSecretKey: "secret", Copy: defaultCopy}
 			retrivedList.Secrets = append(retrivedList.Secrets, newSecret)
 		}
 	}
@@ -55,12 +55,17 @@ func generateJSONFunction(keyVaultName string, defaultPath string, jsonFile stri
 	if err != nil {
 		log.Fatalf("Failed to create json file: %v. Use --file flag if you would like to write to a different file besides secrets.json", err)
 	}
-	defer file.Close()
+
+	defer func() {
+		if err := file.Close(); err != nil {
+			fmt.Println("Error closing file:", err)
+		}
+	}()
 
 	_, err = file.Write(jsonData)
 	if err != nil {
 		log.Fatalf("Failed to write json data to file: %v.", err)
 	}
 
-	fmt.Printf("List of secrets in Keyvault has been written to %v", jsonFile)
+	fmt.Printf("List of secrets in Keyvault has been written to %v\n", jsonFile)
 }

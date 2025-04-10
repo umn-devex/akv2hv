@@ -16,11 +16,13 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 
 3. Login to azure cli `az login`
 
-4. Get a vault token with permissions to write secrets
+4. Set your azure cli subscription to the subscription that contains the keyvault `az account set --subscription <subID>`
+
+5. Get a vault token with permissions to write secrets
 
     - If you have the vault enterprise cli installed, run `vault login --method=saml --namespace=admin`
 
-    - If you do not have the vault enterprise cli installed login to the vault GUI and go to the `Person Icon>Copy token` and then set your environmental variable `VAULT_TOKEN` with that token.
+    - If you do not have the vault enterprise cli installed login to the vault GUI and go to the `Person Icon>Copy token` and use the `--vault_token` flag.
 
 ## Copy Secrets
 
@@ -36,8 +38,9 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 
 2. The second step is to edit the secrets.json file that was generated in step 1. The fields that you will want to edit include:
 
-    - `vault_secret_mount`      - the kvv2 mount location (defaults to secret)
-    - `vault_secret_name` 	  - the name of the secret including path that you would like to store the value to i.e. github/super_secret
+    - `vault_secret_mount`    - the kvv2 mount location (defaults to secret)
+    - `vault_secret_path`     - the path to place the secret at (i.e. app1/dev/) if blank, will place the secret at the root of your mount
+    - `vault_secret_name` 	- the name of the secret that you would like to store the value to (i.e. super_secret)
     - `vault_secret_key`      - the key of the field within the secret (each secret can contain multiple key/value pairs)
     - `copy`                  - true if you would like it copied to vault (defaults to false so nothing will be copied)
 
@@ -54,20 +57,26 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 ## Flags
 
 ``` bash
+  -gen
+        Generate json file secrets.json with a list of secrets from KeyVault as keys.
   -copy
         Run the function to copy the secrets from KeyVault to HashiCorp Vault based on the secrets.json locations.
   -file string
         json file to write or read list of secrets from/to. Defaults to secrets.json in the current directory
-  -gen
-        Generate json file secrets.json with a list of secrets from KeyVault as keys.
   -kv string
         The name of the Azure Key Vault.
-  -mount string
-        The path of the kvv2 mount (will default to secret).
+  -default_copy
+        Generate json file with copy: true as the default
+  -default_mount string
+        Generate the json file with a default kvv2 mount.
+  -default_path string
+        Generate the json file with a default path of the secret including trailing slash.
   -vault_addr string
         The url for vault (i.e. https://examplevault.com).
   -vault_namespace string
-        The namespace for vault (i.e. https://examplevault.com).
+        The namespace for vault (i.e. admin/abc).
+  -vault_token string
+        Vault token, will override VAULT_TOKEN environment variable and vault login token file.
 ```
 
 
