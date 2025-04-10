@@ -57,18 +57,20 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 ## Flags
 
 ``` bash
+  -gen
+        Generate json file secrets.json with a list of secrets from KeyVault as keys.
   -copy
         Run the function to copy the secrets from KeyVault to HashiCorp Vault based on the secrets.json locations.
   -file string
         json file to write or read list of secrets from/to. Defaults to secrets.json in the current directory
-  -gen
-        Generate json file secrets.json with a list of secrets from KeyVault as keys.
   -kv string
         The name of the Azure Key Vault.
-  -mount string
-        The path of the kvv2 mount (will default to secret).
-  -path string
-        The path of the secret mount including trailing / (will default empty and store secrets at the root of the mount).
+  -default_copy
+        Generate json file with copy: true as the default
+  -default_mount string
+        Generate the json file with a default kvv2 mount.
+  -default_path string
+        Generate the json file with a default path of the secret including trailing slash.
   -vault_addr string
         The url for vault (i.e. https://examplevault.com).
   -vault_namespace string

@@ -11,7 +11,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azsecrets"
 )
 
-func generateJSONFunction(keyVaultName string, defaultMount string, defaultPath string, jsonFile string) {
+func generateJSONFunction(keyVaultName string, defaultMount string, defaultPath string, defaultCopy bool, jsonFile string) {
 
 	var retrivedList Secrets
 
@@ -39,7 +39,7 @@ func generateJSONFunction(keyVaultName string, defaultMount string, defaultPath 
 		}
 
 		for _, secret := range page.Value {
-			newSecret := Secret{KeyVaultSecretName: secret.ID.Name(), VaultSecretMount: defaultMount, VaultSecretPath: defaultPath, VaultSecretName: secret.ID.Name(), VaultSecretKey: "secret", Copy: false}
+			newSecret := Secret{KeyVaultSecretName: secret.ID.Name(), VaultSecretMount: defaultMount, VaultSecretPath: defaultPath, VaultSecretName: secret.ID.Name(), VaultSecretKey: "secret", Copy: defaultCopy}
 			retrivedList.Secrets = append(retrivedList.Secrets, newSecret)
 		}
 	}
