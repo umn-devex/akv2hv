@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azsecrets"
 	vault "github.com/hashicorp/vault/api"
 )
 
-func copySecretsFunction(keyVaultName string, vaultAddr string, vaultNamespace string, jsonFile string) {
+func copySecretsFunction(keyVaultName string, vaultAddr string, vaultToken string, vaultNamespace string, jsonFile string) {
 	// Read the JSON file
 	data, err := os.ReadFile(jsonFile)
 	if err != nil {
@@ -35,8 +36,11 @@ func copySecretsFunction(keyVaultName string, vaultAddr string, vaultNamespace s
 			if err != nil {
 				log.Fatalf("failed to get secret from keyvault: %v", err)
 			}
-			fmt.Printf("Writing secret to vault: %v/%v %v=REDACTED\n", individualSecret.VaultSecretPath, individualSecret.VaultSecretName, individualSecret.VaultSecretKey)
-			err = writeSecretToVault(vaultAddr, vaultNamespace, individualSecret.VaultSecretPath, individualSecret.VaultSecretName, individualSecret.VaultSecretKey, secretValue)
+			if individualSecret.VaultSecretPath != "" && !strings.HasSuffix(individualSecret.VaultSecretPath, "/") {
+				individualSecret.VaultSecretPath = individualSecret.VaultSecretPath + "/"
+			}
+			fmt.Printf("Writing secret to vault: mount=%v %v%v %v=REDACTED\n", individualSecret.VaultSecretMount, individualSecret.VaultSecretPath, individualSecret.VaultSecretName, individualSecret.VaultSecretKey)
+			err = writeSecretToVault(vaultAddr, vaultToken, vaultNamespace, individualSecret.VaultSecretMount, individualSecret.VaultSecretPath, individualSecret.VaultSecretName, individualSecret.VaultSecretKey, secretValue)
 			if err != nil {
 				log.Fatalf("failed to write secret to Hashicorp Vault: %v", err)
 			}
@@ -69,7 +73,7 @@ func getSecretFromKeyVault(keyVaultName string, secretName string) (string, erro
 	return *secretResp.Value, nil
 }
 
-func writeSecretToVault(addr string, namespace string, mount string, name string, key string, value string) error {
+func writeSecretToVault(addr string, token string, namespace string, mount string, path string, name string, key string, value string) error {
 	ctx := context.Background()
 	config := vault.DefaultConfig()
 	config.Address = addr
@@ -78,15 +82,16 @@ func writeSecretToVault(addr string, namespace string, mount string, name string
 		log.Fatalf("unable to initialize Vault client: %v", err)
 	}
 
-	client.SetToken(os.Getenv("VAULT_TOKEN"))
+	client.SetToken(token)
 	client.SetNamespace(namespace)
 
 	secretData := map[string]interface{}{
 		key: value,
 	}
 
-	// Check for existing secret
+	name = path + name
 
+	// Check for existing secret
 	_, err = client.KVv2(mount).Get(ctx, name)
 	if err != nil {
 		// Use put method to create secret if it doesn't exist

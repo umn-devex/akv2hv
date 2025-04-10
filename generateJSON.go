@@ -11,7 +11,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azsecrets"
 )
 
-func generateJSONFunction(keyVaultName string, defaultPath string, jsonFile string) {
+func generateJSONFunction(keyVaultName string, defaultMount string, defaultPath string, jsonFile string) {
 
 	var retrivedList Secrets
 
@@ -39,7 +39,7 @@ func generateJSONFunction(keyVaultName string, defaultPath string, jsonFile stri
 		}
 
 		for _, secret := range page.Value {
-			newSecret := Secret{KeyVaultSecretName: secret.ID.Name(), VaultSecretPath: defaultPath, VaultSecretName: secret.ID.Name(), VaultSecretKey: "secret", Copy: false}
+			newSecret := Secret{KeyVaultSecretName: secret.ID.Name(), VaultSecretMount: defaultMount, VaultSecretPath: defaultPath, VaultSecretName: secret.ID.Name(), VaultSecretKey: "secret", Copy: false}
 			retrivedList.Secrets = append(retrivedList.Secrets, newSecret)
 		}
 	}
@@ -62,5 +62,5 @@ func generateJSONFunction(keyVaultName string, defaultPath string, jsonFile stri
 		log.Fatalf("Failed to write json data to file: %v.", err)
 	}
 
-	fmt.Printf("List of secrets in Keyvault has been written to %v", jsonFile)
+	fmt.Printf("List of secrets in Keyvault has been written to %v\n", jsonFile)
 }
