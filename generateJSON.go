@@ -55,7 +55,12 @@ func generateJSONFunction(keyVaultName string, defaultMount string, defaultPath 
 	if err != nil {
 		log.Fatalf("Failed to create json file: %v. Use --file flag if you would like to write to a different file besides secrets.json", err)
 	}
-	defer file.Close()
+
+	defer func() {
+		if err := file.Close(); err != nil {
+			fmt.Println("Error closing file:", err)
+		}
+	}()
 
 	_, err = file.Write(jsonData)
 	if err != nil {
