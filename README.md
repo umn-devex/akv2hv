@@ -12,21 +12,29 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 
 2. Open a command line window in the directory that you downloaded the binary to.
 
-2. Install azure cli <https://learn.microsoft.com/en-us/cli/azure/install-azure-cli>
+3. If you downloaded the binary, unzip it i.e. `tar -xzvf akv2hv_0.0.7_linux_amd64.tar.gz`
 
-3. Login to azure cli `az login`
+4. Install azure cli <https://learn.microsoft.com/en-us/cli/azure/install-azure-cli>
 
-4. Set your azure cli subscription to the subscription that contains the keyvault `az account set --subscription <subID>`
+5. Login to azure cli `az login`
 
-5. Get a vault token with permissions to write secrets
+6. Set your azure cli subscription to the subscription that contains the keyvault `az account set --subscription <subID>`
 
-    - If you have the vault enterprise cli installed, run `vault login --method=saml --namespace=admin`
+7. Get a vault token with permissions to write secrets
+
+    - If you have the [vault enterprise](https://www.hashicorp.com/en/resources/getting-vault-enterprise-installed-running) cli installed, run `vault login --method=saml --namespace=admin`. If you need to install the vault enterprise binary, make sure to uninstall the non-enterprise binary first. To verify that you have the enterprise binary, run `vault --version` and make sure that `+ent` is at the end of the version number (i.e. `Vault v1.19.1+ent`)
 
     - If you do not have the vault enterprise cli installed login to the vault GUI and go to the `Person Icon>Copy token` and use the `--vault_token` flag.
 
 ## Copy Secrets
 
-1. The first step is to generate a json file with the list of all secrets you have in KeyVault. This will only retrieve their names, not their values.
+1. The first step is to generate a json file with the list of all secrets you have in KeyVault. This will only retrieve their names, not their values. In this step, there are a few optional flags that you may want to include: 
+      
+      - `-default_copy` - sets the copy attribute as true for all secrets in the json file if you want to default move them all
+
+      - `-default_mount` - sets the default kvv2 mount location in the json file instead of `secret/`
+
+      - `-default_path` - sets teh default path for all secrets in the json file
 
     ```bash
     # Linux & MacOS
