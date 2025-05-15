@@ -28,13 +28,14 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 
 ## Copy Secrets
 
-1. The first step is to generate a json file with the list of all secrets you have in KeyVault. This will only retrieve their names, not their values. In this step, there are a few optional flags that you may want to include: 
+1. The first step is to generate a json file with the list of all secrets you have in KeyVault. This will only retrieve their names, not their values. CLI flags for this step: 
       
-      - `-default_copy` - sets the copy attribute as true for all secrets in the json file if you want to default move them all
-
-      - `-default_mount` - sets the default kvv2 mount location in the json file instead of `secret/`
-
-      - `-default_path` - sets teh default path for all secrets in the json file
+      - **Required:** `-gen` - Generate json file secrets.json with a list of secrets from KeyVault as keys.
+      - **Required:** `-kv` *string* - The name of the Azure Key Vault.
+      - **Optional:** `-file` *string* - json file to write or read list of secrets from/to. Defaults to secrets.json in the current directory
+      - **Optional:** `-default_copy` - sets the copy attribute as true for all secrets in the json file if you want to default move them all
+      - **Optional:** `-default_mount` *string* - sets the default kvv2 mount location in the json file instead of `secret/`
+      - **Optional:** `-default_path` *string* - sets the default path for all secrets in the json file
 
     ```bash
     # Linux & MacOS
@@ -52,7 +53,14 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
     - `vault_secret_key`      - the key of the field within the secret (each secret can contain multiple key/value pairs)
     - `copy`                  - true if you would like it copied to vault (defaults to false so nothing will be copied)
 
-3. The final step is to run the copy function to retrieve the secret data from Azure KeyVault and write the secrets to Hashicorp Vault.
+3. The final step is to run the copy function to retrieve the secret data from Azure KeyVault and write the secrets to Hashicorp Vault. CLI flags for this step: 
+
+      - **Required:** `-copy` - Run the function to copy the secrets from KeyVault to HashiCorp Vault based on the secrets.json locations.
+      - **Required:** `-kv` *string* - The name of the Azure Key Vault.
+      - **Required:** `-vault_addr` *string* - The url for vault (i.e. https://examplevault.com).
+      - **Required:** `-vault_namespace` *string* - The namespace for vault (i.e. admin/abc).
+      - **Optional:** `-file` *string* - json file to write or read list of secrets from/to. Defaults to secrets.json in the current directory
+      - **Optional:** `-vault_token` *string* - Vault token, will override VAULT_TOKEN environment variable and vault login token file.
 
     ```bash
     # Linux & MacOS
@@ -61,31 +69,6 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
     # Windows
     akv2hv.exe --kv=INSERT_AZ_KV_NAME --vault_addr=https://EXAMPLE.z1.hashicorp.cloud:8200/ --vault_namespace=admin/namespace --copy
     ```
-
-## Flags
-
-``` bash
-  -gen
-        Generate json file secrets.json with a list of secrets from KeyVault as keys.
-  -copy
-        Run the function to copy the secrets from KeyVault to HashiCorp Vault based on the secrets.json locations.
-  -file string
-        json file to write or read list of secrets from/to. Defaults to secrets.json in the current directory
-  -kv string
-        The name of the Azure Key Vault.
-  -default_copy
-        Generate json file with copy: true as the default
-  -default_mount string
-        Generate the json file with a default kvv2 mount.
-  -default_path string
-        Generate the json file with a default path of the secret including trailing slash.
-  -vault_addr string
-        The url for vault (i.e. https://examplevault.com).
-  -vault_namespace string
-        The namespace for vault (i.e. admin/abc).
-  -vault_token string
-        Vault token, will override VAULT_TOKEN environment variable and vault login token file.
-```
 
 
 ## Building Locally
