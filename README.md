@@ -43,6 +43,9 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 
     # Windows
     akv2hv.exe --kv=INSERT_AZ_KV_NAME --gen
+
+    # If you are migrating for AAP
+    ./akv2hv --kv=INSERT_AZ_KV_NAME --gen --default_path aap/
     ```
 
 2. The second step is to edit the secrets.json file that was generated in step 1. The fields that you will want to edit include:
