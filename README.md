@@ -4,7 +4,7 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 
 ## Prerequisites
 
-1. Download the latest akv2hv binary for your OS from https://github.com/umn-secm/akv2hv/releases or [build locally](./README.md#building-locally)
+1. Download the latest akv2hv binary for your OS from https://github.com/umn-devex/akv2hv/releases or [build locally](./README.md#building-locally)
 
       - Windows (probably want windows_amd64)
       - Linux (probably want linux_amd64)
@@ -74,7 +74,7 @@ Go app for migrating secrets from Azure KeyVault to Hashicorp Vault.
 ## Building Locally
 
 ```bash
-git clone git@github.com:umn-secm/akv2hv.git
+git clone git@github.com:umn-devex/akv2hv.git
 cd akv2hv
 go build -o .
 ```
